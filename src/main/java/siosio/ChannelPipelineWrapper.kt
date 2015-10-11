@@ -8,10 +8,11 @@ import siosio.handler.InboundExceptionCaught
 
 class ChannelPipelineWrapper(val pipeline: ChannelPipeline) : ChannelPipeline by pipeline {
 
-  fun addLast(name: String, handler: ChannelRead): Unit {
+  fun <T> addLast(name: String, handler: ChannelRead<T>): Unit {
     addLast(name, object: ChannelInboundHandlerAdapter() {
       override fun channelRead(ctx: ChannelHandlerContext?, msg: Any?) {
-        handler.invoke(ctx, msg)
+        @Suppress("UNCHECKED_CAST")
+        handler.invoke(ctx, msg as T)
       }
     })
   }

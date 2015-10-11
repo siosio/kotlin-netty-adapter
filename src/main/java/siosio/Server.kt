@@ -10,13 +10,16 @@ import kotlin.properties.Delegates
 class Server(val config: Configuration) {
 
   companion object {
-    fun start(init: Configuration.() -> Unit) {
+    @JvmStatic fun start(init: Configuration.() -> Unit) {
       val configuration = Configuration()
       configuration.init()
       Server(configuration).start()
     }
   }
 
+  /**
+   * start server
+   */
   fun start() {
     val bootstrap = createServerBootstrap()
     bootstrap.channel(NioServerSocketChannel::class.java)
@@ -31,15 +34,22 @@ class Server(val config: Configuration) {
 
   private fun createServerBootstrap(): ServerBootstrap {
     val serverBootstrap = ServerBootstrap()
-    serverBootstrap.group(NioEventLoopGroup(), NioEventLoopGroup(config.childThreadCount))
+    serverBootstrap.group(
+        NioEventLoopGroup(config.bossThreadCount),
+        NioEventLoopGroup(config.childThreadCount))
     return serverBootstrap
   }
 }
 
+/**
+ * Server config.
+ */
 class Configuration {
-  var childThreadCount: Int by Delegates.notNull()
 
-  var port: Int by Delegates.notNull()
+  var bossThreadCount: Int = Runtime.getRuntime().availableProcessors() * 2
+  var childThreadCount: Int = Runtime.getRuntime().availableProcessors() * 2
+
+  var port: Int = 9999
 
   lateinit var handlers: (ChannelPipelineWrapper) -> Unit
 }

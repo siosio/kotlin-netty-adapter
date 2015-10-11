@@ -21,12 +21,11 @@ object RunServer {
       port = 9999
 
       handlers = {
-        it.addLast("reader", ChannelRead { ctx, msg ->
-          val buf = msg as ByteBuf
-          println("受信したよ -> ${buf.toString(Charset.forName("utf-8"))}")
+        it.addLast("reader", ChannelRead<ByteBuf> { ctx, msg ->
+          println("receive message. -> ${msg.toString(Charset.forName("utf-8"))}")
           ctx.writeAndFlush(msg)
         })
-      it.addLast("error", InboundExceptionCaught { ctx, cause -> println("cause = $cause") })
+        it.addLast("error", InboundExceptionCaught { ctx, cause -> println("cause = $cause") })
       }
     }
   }
