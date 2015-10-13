@@ -5,7 +5,6 @@ import io.netty.channel.ChannelInitializer
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import kotlin.properties.Delegates
 
 class Server(val config: Configuration) {
 
@@ -51,6 +50,6 @@ class Configuration {
 
   var port: Int = 9999
 
-  lateinit var handlers: (ChannelPipelineWrapper) -> Unit
+  var handlers: (ChannelPipelineWrapper) -> Unit = {}
 }
 
